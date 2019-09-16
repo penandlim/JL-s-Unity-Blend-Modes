@@ -5,7 +5,7 @@ Each shader applies given texture from sprite renderer to the texture from Unity
 
 ![alt text](https://raw.githubusercontent.com/penandlim/JL-s-Unity-Blend-Modes/master/preview.png "Preview")
 
-The texture assigned to sprite renderer **must have same dimensions/ratio as Screen width and height.**
+
 
 Built for screen space effect but feel free to modify it by replacing GrabPass to other textures.
 

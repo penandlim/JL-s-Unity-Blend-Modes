@@ -21,3 +21,7 @@ You can also use Stencil properties to limit the overlay effect to certain objec
 4. Add a material with a shader thats in "Blendmodes/" category
 
 5. Adjust tint and opacity of the blend layer accordingly.
+
+
+# Special thanks
+https://github.com/supyrb/ConfigurableShaders

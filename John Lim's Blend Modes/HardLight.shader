@@ -94,7 +94,7 @@ Shader "Blendmodes/HardLight"
 
 
                 // perform blend
-                mainColor.xyz = HardLight(mainColor.xyz, blendColor.xyz);
+                mainColor.xyz = HardLight(blendColor.xyz, mainColor.xyz);
                 mainColor.xyz += _Tint2.xyz * _Tint2.a;
                 mainColor.a = blendColor.a * _Alpha;
 

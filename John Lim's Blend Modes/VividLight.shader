@@ -94,7 +94,7 @@ Shader "Blendmodes/VividLight"
 
 
                 // perform blend
-                mainColor.xyz = VividLight(mainColor.xyz, blendColor.xyz);
+                mainColor.xyz = VividLight(blendColor.xyz, mainColor.xyz);
                 mainColor.xyz += _Tint2.xyz * _Tint2.a;
                 mainColor.a = blendColor.a * _Alpha;
 

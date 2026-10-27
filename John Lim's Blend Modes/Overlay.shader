@@ -94,7 +94,7 @@ Shader "Blendmodes/Overlay"
 
 
                 // perform blend
-                mainColor.xyz = Overlay(mainColor.xyz, blendColor.xyz);
+                mainColor.xyz = Overlay(blendColor.xyz, mainColor.xyz);
                 mainColor.xyz += _Tint2.xyz * _Tint2.a;
                 mainColor.a = blendColor.a * _Alpha;
 

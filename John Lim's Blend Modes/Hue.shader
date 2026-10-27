@@ -94,7 +94,7 @@ Shader "Blendmodes/Hue"
 
 
                 // perform blend
-                mainColor.xyz = Hue(mainColor.xyz, blendColor.xyz);
+                mainColor.xyz = Hue(blendColor.xyz, mainColor.xyz);
                 mainColor.xyz += _Tint2.xyz * _Tint2.a;
                 mainColor.a = blendColor.a * _Alpha;
 

@@ -18,7 +18,8 @@
  
 // Helpers
  
-const fixed3 l = fixed3(0.3, 0.59, 0.11);
+// Compile the weights into the shader instead of exposing an unset uniform.
+static const fixed3 l = fixed3(0.3, 0.59, 0.11);
  
 /** @private */
 float pinLight(float s, float d)
@@ -75,6 +76,8 @@ fixed3 hsv2rgb(fixed3 c)
 }
  
 // Public API Blend Modes
+// Noncommutative color modes take blend/source s, then background/destination d.
+// Subtract and Divide retain their arithmetic s-d and s/d argument order.
  
 fixed3 ColorBurn(fixed3 s, fixed3 d)
 {

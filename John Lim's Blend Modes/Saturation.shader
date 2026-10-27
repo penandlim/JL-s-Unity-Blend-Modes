@@ -94,7 +94,7 @@ Shader "Blendmodes/Saturation"
 
 
                 // perform blend
-                mainColor.xyz = Saturation(mainColor.xyz, blendColor.xyz);
+                mainColor.xyz = Saturation(blendColor.xyz, mainColor.xyz);
                 mainColor.xyz += _Tint2.xyz * _Tint2.a;
                 mainColor.a = blendColor.a * _Alpha;
 

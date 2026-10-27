@@ -94,7 +94,7 @@ Shader "Blendmodes/ColorBurn"
 
 
                 // perform blend
-                mainColor.xyz = ColorBurn(mainColor.xyz, blendColor.xyz);
+                mainColor.xyz = ColorBurn(blendColor.xyz, mainColor.xyz);
                 mainColor.xyz += _Tint2.xyz * _Tint2.a;
                 mainColor.a = blendColor.a * _Alpha;
 

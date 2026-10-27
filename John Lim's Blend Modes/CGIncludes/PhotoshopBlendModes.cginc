@@ -195,6 +195,11 @@ fixed3 Add(fixed3 s, fixed3 d)
 {
     return s+d;
 }
+
+fixed3 Multiply(fixed3 s, fixed3 d)
+{
+    return s*d;
+}
  
 fixed3 Hue(fixed3 s, fixed3 d)
 {

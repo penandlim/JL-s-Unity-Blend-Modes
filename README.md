@@ -29,6 +29,12 @@ Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs,
 
 ![Hue, Saturation, Color, and Luminosity](samples/color-components.png)
 
+**Stencil masks** — recolor selected objects, brighten a window, or darken outside a spotlight. White regions receive the effect; black regions stay unchanged.
+
+![Stencil masks and rendered results: Color on selected objects, Screen inside a rectangle, and Multiply outside a circle](samples/stencil-use-cases.png)
+
+Masks write stencil ID `1` first; blend layers use `Equal` or `NotEqual` with the stencil operation set to `Keep`.
+
 # Usage
 1. Add a UI Canvas to your project.
 

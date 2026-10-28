@@ -27,7 +27,7 @@ Shader "Blendmodes/Multiply"
         LOD 100
         Cull Off
         ZWrite Off
-        Blend [_BlendSrc] [_BlendDst]
+        Blend [_BlendSrc] [_BlendDst], One OneMinusSrcAlpha
         ColorMask [_ColorMask]
 
         Stencil
@@ -39,59 +39,26 @@ Shader "Blendmodes/Multiply"
             WriteMask [_StencilWriteMask]
         }
 
-        // Capture the accumulated background rather than reusing another layer's snapshot.
         GrabPass { }
 
         Pass
         {
             CGPROGRAM
-            #pragma vertex vert
+            #pragma vertex BlendModeVert
             #pragma fragment frag
 
             #include "UnityCG.cginc"
             #include "CGIncludes/PhotoshopBlendModes.cginc"
+            #include "CGIncludes/BlendModeRendering.cginc"
 
-            struct appdata
+            float4 frag (BlendModeVaryings i) : SV_Target
             {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-                float4 color : COLOR;
-            };
-
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-                float4 color : COLOR;
-                float4 bguv : TEXCOORD1;
-            };
-
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-            fixed4 _Tint1;
-            fixed4 _Tint2;
-            fixed _Alpha;
-            sampler2D _GrabTexture;
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.color = v.color;
-                o.bguv = ComputeGrabScreenPos(o.vertex);
-                return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                fixed4 mainColor = tex2Dproj(_GrabTexture, i.bguv);
-                fixed4 blendColor = tex2D(_MainTex, i.uv) * i.color;
-                blendColor.rgb += _Tint1.rgb * _Tint1.a;
-                mainColor.rgb = Multiply(mainColor.rgb, blendColor.rgb);
-                mainColor.rgb += _Tint2.rgb * _Tint2.a;
-                mainColor.a = blendColor.a * _Alpha;
-                return mainColor;
+                float alpha;
+                float backdropAlpha;
+                float3 source = BlendModeSource(i, alpha);
+                float3 backdrop = BlendModeBackdrop(i, backdropAlpha);
+                float3 blended = Multiply(source, backdrop);
+                return BlendModeCompose(source, blended, backdropAlpha, alpha);
             }
             ENDCG
         }

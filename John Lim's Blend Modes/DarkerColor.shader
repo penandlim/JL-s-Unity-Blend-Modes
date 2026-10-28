@@ -65,7 +65,7 @@ Shader "Blendmodes/DarkerColor"
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
                 float4 color : COLOR;
-                float2 bguv : TEXCOORD1;
+                float4 bguv : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -88,7 +88,7 @@ Shader "Blendmodes/DarkerColor"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 mainColor = tex2D(_BackgroundTexture, i.bguv);
+                fixed4 mainColor = tex2Dproj(_BackgroundTexture, i.bguv);
                 fixed4 blendColor = tex2D(_MainTex, i.uv) * i.color;
                 blendColor.xyz += _Tint1.xyz * _Tint1.a;
 

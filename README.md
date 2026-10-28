@@ -1,7 +1,7 @@
 # JL's Unity Blend Modes
 Collection of Unity shaders that support blend modes like photoshop layer style (Darken, Multiply, Linear Burn, etc)
 
-Each shader applies given texture from sprite renderer to the texture from Unity's GrabPass, emulaitng the blend effect of photoshop layers.
+Shaders blend sprite textures with the accumulated screen background using Unity's GrabPass.
 
 Built for screen space effect but feel free to modify it by replacing GrabPass to other textures.
 GrabPass sampling supports both orthographic and perspective cameras in Unity's Built-in Render Pipeline.
@@ -13,6 +13,10 @@ You can also use Stencil properties to limit the overlay effect to certain objec
 Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs, 80% layer opacity, no tints.
 
 ![Background scene and gradient blend layer](samples/inputs.png)
+
+**Basics** — normal layering, opacity-driven speckles, and per-channel darkening.
+
+![Normal, Dissolve, and Darken](samples/basic.png)
 
 **Multiply & arithmetic** — darken, burn, subtract, or divide.
 
@@ -26,7 +30,7 @@ Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs,
 
 ![Overlay, Soft Light, Hard Light, Vivid Light, Linear Light, Pin Light, Hard Mix, Difference, and Exclusion](samples/contrast-difference.png)
 
-**Color components** — transfer hue, saturation, color, or luminosity. Color preserves background luminosity; muted blend colors still desaturate.
+**Color components** — transfer hue, saturation, color, or luminosity. Hue, Saturation, and Color preserve background luminosity; muted blend colors can still desaturate.
 
 ![Hue, Saturation, Color, and Luminosity](samples/color-components.png)
 
@@ -35,6 +39,13 @@ Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs,
 ![Stencil masks and rendered results: Color on selected objects, Screen inside a rectangle, and Multiply outside a circle](samples/stencil-use-cases.png)
 
 Masks write stencil ID `1` first; blend layers use `Equal` or `NotEqual` with the stencil operation set to `Keep`.
+
+# Rendering notes
+
+- Blend inputs and mode results are bounded to `[0,1]`, including on HDR targets. This changes prior unbounded output; it does not tone-map the remaining background. Divide treats a zero divisor as white, including `0/0`.
+- Transparent targets use **premultiplied RGB**: clear to `(0,0,0,0)`, supply premultiplied backdrop content, and composite the resulting texture with `One, OneMinusSrcAlpha`.
+- Sorting Layer and Order in Layer control stacking. Each renderer captures the accumulated background, costing one GrabPass per layer.
+- Tint 1 affects the source; Tint 2 affects the mode result in overlapping regions. Dissolve converts combined texture, vertex, and material opacity into stable pixel coverage, not Photoshop's exact random pattern.
 
 # Usage
 1. Add a UI Canvas to your project.

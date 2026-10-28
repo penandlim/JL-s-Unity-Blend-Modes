@@ -25,11 +25,13 @@ Shader "Blendmodes/Saturation"
     }
     SubShader
     {
-        Tags { "Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent" }
+        Tags { "Queue"="Transparent" "IgnoreProjector"="true" "RenderType"="Transparent" "DisableBatching"="true" }
         LOD 100
-        Blend [_BlendSrc] [_BlendDst]
+        Cull Off
+        ZWrite Off
+        Blend [_BlendSrc] [_BlendDst], One OneMinusSrcAlpha
+        ColorMask [_ColorMask]
 
-        // required for UI.Mask
         Stencil
         {
             Ref [_Stencil]
@@ -39,66 +41,26 @@ Shader "Blendmodes/Saturation"
             WriteMask [_StencilWriteMask]
         }
 
-        GrabPass
-        {
-            "_BackgroundTexture"
-        }
+        GrabPass { }
 
         Pass
         {
             CGPROGRAM
-            #pragma vertex vert
+            #pragma vertex BlendModeVert
             #pragma fragment frag
 
             #include "UnityCG.cginc"
             #include "CGIncludes/PhotoshopBlendModes.cginc"
+            #include "CGIncludes/BlendModeRendering.cginc"
 
-            struct appdata
+            float4 frag (BlendModeVaryings i) : SV_Target
             {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-                float4 color : COLOR;
-            };
-
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-                float4 color : COLOR;
-                float4 bguv : TEXCOORD1;
-            };
-
-            sampler2D _MainTex;
-            fixed4 _MainTex_ST;
-            fixed4 _Tint1;
-            fixed4 _Tint2;
-            fixed _Alpha;
-
-            sampler2D _BackgroundTexture;
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.color = v.color;
-                o.bguv = ComputeGrabScreenPos(o.vertex);
-                return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                fixed4 mainColor = tex2Dproj(_BackgroundTexture, i.bguv);
-                fixed4 blendColor = tex2D(_MainTex, i.uv) * i.color;
-                blendColor.xyz += _Tint1.xyz * _Tint1.a;
-
-
-                // perform blend
-                mainColor.xyz = Saturation(blendColor.xyz, mainColor.xyz);
-                mainColor.xyz += _Tint2.xyz * _Tint2.a;
-                mainColor.a = blendColor.a * _Alpha;
-
-                return mainColor;
+                float alpha;
+                float backdropAlpha;
+                float3 source = BlendModeSource(i, alpha);
+                float3 backdrop = BlendModeBackdrop(i, backdropAlpha);
+                float3 blended = Saturation(source, backdrop);
+                return BlendModeCompose(source, blended, backdropAlpha, alpha);
             }
             ENDCG
         }

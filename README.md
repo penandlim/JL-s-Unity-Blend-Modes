@@ -26,7 +26,7 @@ Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs,
 
 ![Overlay, Soft Light, Hard Light, Vivid Light, Linear Light, Pin Light, Hard Mix, Difference, and Exclusion](samples/contrast-difference.png)
 
-**Color components** — transfer hue, saturation, color, or luminosity.
+**Color components** — transfer hue, saturation, color, or luminosity. Color preserves background luminosity; muted blend colors still desaturate.
 
 ![Hue, Saturation, Color, and Luminosity](samples/color-components.png)
 

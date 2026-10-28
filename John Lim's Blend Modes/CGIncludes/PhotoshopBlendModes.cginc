@@ -52,6 +52,18 @@ float overlay( float s, float d )
 {
     return (d < 0.5) ? 2.0*s*d : 1.0 - 2.0*(1.0 - s)*(1.0 - d);
 }
+
+/** @private */
+fixed3 setLum(fixed3 c, float lum)
+{
+    // Preserve the requested luminosity when clipping to the RGB gamut.
+    float3 result = c + (lum - dot(c, l));
+    float minC = min(min(result.x, result.y), result.z);
+    float maxC = max(max(result.x, result.y), result.z);
+    if(minC < 0.0) result = lum + ((result - lum) * lum) / (lum - minC);
+    if(maxC > 1.0) result = lum + ((result - lum) * (1.0 - lum)) / (maxC - lum);
+    return result;
+}
  
 //    rgb<-->hsv functions by Sam Hocevar
 //    http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
@@ -213,9 +225,7 @@ fixed3 Hue(fixed3 s, fixed3 d)
  
 fixed3 Color(fixed3 s, fixed3 d)
 {
-    s = rgb2hsv(s);
-    s.z = rgb2hsv(d).z;
-    return hsv2rgb(s);
+    return setLum(s, dot(d, l));
 }
  
 fixed3 Saturation(fixed3 s, fixed3 d)
@@ -227,15 +237,7 @@ fixed3 Saturation(fixed3 s, fixed3 d)
  
 fixed3 Luminosity(fixed3 s, fixed3 d)
 {
-    float dLum = dot(d, l);
-    float sLum = dot(s, l);
-    float lum = sLum - dLum;
-    fixed3 c = d + lum;
-    float minC = min(min(c.x, c.y), c.z);
-    float maxC = max(max(c.x, c.y), c.z);
-    if(minC < 0.0) return sLum + ((c - sLum) * sLum) / (sLum - minC);
-    else if(maxC > 1.0) return sLum + ((c - sLum) * (1.0 - sLum)) / (maxC - sLum);
-    else return c;
+    return setLum(d, dot(s, l));
 }
  
 #endif // PHOTOSHOP_BLENDMODES_INCLUDED

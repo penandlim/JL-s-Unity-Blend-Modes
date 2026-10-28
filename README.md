@@ -4,6 +4,7 @@ Collection of Unity shaders that support blend modes like photoshop layer style 
 Each shader applies given texture from sprite renderer to the texture from Unity's GrabPass, emulaitng the blend effect of photoshop layers.
 
 Built for screen space effect but feel free to modify it by replacing GrabPass to other textures.
+GrabPass sampling supports both orthographic and perspective cameras in Unity's Built-in Render Pipeline.
 
 You can also use Stencil properties to limit the overlay effect to certain objects in the scene.
 

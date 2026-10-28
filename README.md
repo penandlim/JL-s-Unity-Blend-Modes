@@ -10,7 +10,7 @@ You can also use Stencil properties to limit the overlay effect to certain objec
 
 # Samples
 
-Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs, 80% layer opacity, no tints.
+Unity 6000.6.7f1 · Built-in/Metal · Gamma · Project blending space · orthographic camera. Same inputs, 80% layer opacity, no tints.
 
 ![Background scene and gradient blend layer](samples/inputs.png)
 
@@ -40,11 +40,26 @@ Unity 6000.6.7f1 · Built-in/Metal · Gamma · orthographic camera. Same inputs,
 
 Masks write stencil ID `1` first; blend layers use `Equal` or `NotEqual` with the stencil operation set to `Keep`.
 
+# Blending color space
+
+Set **Blending Color Space** on each material (`_BlendSpace`):
+
+| Selection | Blend formulas and tints | Opacity compositing |
+| --- | --- | --- |
+| Project (`0`, default) | Unity project space | Unity project space |
+| sRGB (`1`) | Encoded sRGB | Encoded sRGB |
+| Linear (`2`) | Linear-light RGB | Linear-light RGB |
+| sRGBLinearOpacity (`3`) | Encoded sRGB | Linear-light RGB |
+
+Explicit selections use sRGB primaries and piecewise sRGB transfer functions, then return premultiplied RGB in Unity's project space. Use sRGB imports for color textures. RGB blend-factor controls are evaluated in the selected compositing space; alpha remains source-over.
+
+`sRGBLinearOpacity` follows the linear-opacity behavior observed in [published 8-bit Photoshop Normal, Multiply, Linear Dodge, and Screen samples](https://github.com/cinight/PSBlendModes/tree/6000.0/Assets/Test/PhotoshopReference). This is not a general Photoshop/ICC-profile parity guarantee. Texture/vertex precision, lighting, later compositing, and tone mapping can still affect the final image.
+
 # Rendering notes
 
 - Blend inputs and mode results are bounded to `[0,1]`, including on HDR targets. This changes prior unbounded output; it does not tone-map the remaining background. Divide treats a zero divisor as white, including `0/0`.
 - Transparent targets use **premultiplied RGB**: clear to `(0,0,0,0)`, supply premultiplied backdrop content, and composite the resulting texture with `One, OneMinusSrcAlpha`.
-- Sorting Layer and Order in Layer control stacking. Each renderer captures the accumulated background, costing one GrabPass per layer.
+- Sorting Layer and Order in Layer control stacking. Each renderer captures the accumulated background, costing one GrabPass per layer. Compositing uses this resolved screen copy, not per-sample MSAA data.
 - Tint 1 affects the source; Tint 2 affects the mode result in overlapping regions. Dissolve converts combined texture, vertex, and material opacity into stable pixel coverage, not Photoshop's exact random pattern.
 
 # Usage

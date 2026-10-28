@@ -11,6 +11,7 @@ Shader "Blendmodes/Luminosity"
         //blending
 
         [Header(Blending)]
+        [Enum(Project,0,sRGB,1,Linear,2,sRGBLinearOpacity,3)] _BlendSpace ("Blending Color Space", Float) = 0
     		[Enum(UnityEngine.Rendering.BlendMode)] _BlendSrc ("Blend mode Source", Int) = 5
     		[Enum(UnityEngine.Rendering.BlendMode)] _BlendDst ("Blend mode Destination", Int) = 10
 
@@ -29,7 +30,7 @@ Shader "Blendmodes/Luminosity"
         LOD 100
         Cull Off
         ZWrite Off
-        Blend [_BlendSrc] [_BlendDst], One OneMinusSrcAlpha
+        Blend Off
         ColorMask [_ColorMask]
 
         Stencil
@@ -56,11 +57,12 @@ Shader "Blendmodes/Luminosity"
             float4 frag (BlendModeVaryings i) : SV_Target
             {
                 float alpha;
-                float backdropAlpha;
+
                 float3 source = BlendModeSource(i, alpha);
-                float3 backdrop = BlendModeBackdrop(i, backdropAlpha);
+                float4 background = BlendModeBackdrop(i);
+                float3 backdrop = BlendModeBackdropColor(background);
                 float3 blended = Luminosity(source, backdrop);
-                return BlendModeCompose(source, blended, backdropAlpha, alpha);
+                return BlendModeCompose(source, blended, background, alpha, i.tint2);
             }
             ENDCG
         }

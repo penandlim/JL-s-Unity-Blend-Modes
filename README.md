@@ -10,7 +10,7 @@ You can also use Stencil properties to limit the overlay effect to certain objec
 
 # Samples
 
-Unity 6000.6.7f1 · Built-in/Metal · Gamma · Project blending space · orthographic camera. Same inputs, 80% layer opacity, no tints.
+Unity 6000.6.7f1 · Built-in/Metal · orthographic camera. These galleries use **Project blending (`_BlendSpace = 0`) in a Gamma project**, equivalent to sRGB blending here. Same inputs, 80% layer opacity, no tints.
 
 ![Background scene and gradient blend layer](samples/inputs.png)
 
@@ -54,6 +54,18 @@ Set **Blending Color Space** on each material (`_BlendSpace`):
 Explicit selections use sRGB primaries and piecewise sRGB transfer functions, then return premultiplied RGB in Unity's project space. Use sRGB imports for color textures. RGB blend-factor controls are evaluated in the selected compositing space; alpha remains source-over.
 
 `sRGBLinearOpacity` follows the linear-opacity behavior observed in [published 8-bit Photoshop Normal, Multiply, Linear Dodge, and Screen samples](https://github.com/cinight/PSBlendModes/tree/6000.0/Assets/Test/PhotoshopReference). This is not a general Photoshop/ICC-profile parity guarantee. Texture/vertex precision, lighting, later compositing, and tone mapping can still affect the final image.
+
+## Blend-space comparisons
+
+Same scene and gradient, **Gamma project**, **80% opacity**, no tints. Only `_BlendSpace` changes.
+
+**Normal & Linear Dodge** — Normal isolates opacity differences; Linear Dodge also changes with formula space.
+
+![Normal and Linear Dodge compared in sRGB, Linear, and sRGB with linear opacity](samples/blend-spaces-lightening.png)
+
+**Overlay & Color** — contrast and color transfer also change with the selected space.
+
+![Overlay and Color compared in sRGB, Linear, and sRGB with linear opacity](samples/blend-spaces-contrast-color.png)
 
 # Rendering notes
 

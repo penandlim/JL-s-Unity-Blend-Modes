@@ -9,6 +9,7 @@ Shader "Blendmodes/Normal"
         _Alpha ("Opacity of Blended Result", Range(0.0, 1.0)) = 1.0
 
         [Header(Blending)]
+        [Enum(Project,0,sRGB,1,Linear,2,sRGBLinearOpacity,3)] _BlendSpace ("Blending Color Space", Float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _BlendSrc ("Blend mode Source", Int) = 5
         [Enum(UnityEngine.Rendering.BlendMode)] _BlendDst ("Blend mode Destination", Int) = 10
 
@@ -26,7 +27,7 @@ Shader "Blendmodes/Normal"
         LOD 100
         Cull Off
         ZWrite Off
-        Blend [_BlendSrc] [_BlendDst], One OneMinusSrcAlpha
+        Blend Off
         ColorMask [_ColorMask]
 
         Stencil
@@ -54,9 +55,9 @@ Shader "Blendmodes/Normal"
             {
                 float alpha;
                 float3 source = BlendModeSource(i, alpha);
-                float backdropAlpha;
-                float3 backdrop = BlendModeBackdrop(i, backdropAlpha);
-                return BlendModeCompose(source, Normal(source, backdrop), backdropAlpha, alpha);
+                float4 background = BlendModeBackdrop(i);
+                float3 backdrop = BlendModeBackdropColor(background);
+                return BlendModeCompose(source, Normal(source, backdrop), background, alpha, i.tint2);
             }
             ENDCG
         }
